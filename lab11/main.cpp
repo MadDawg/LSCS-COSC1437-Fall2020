@@ -11,7 +11,8 @@ int main()
     cout << "The Test Scores program\n\n";
 
     cout << "Enter test scores from 0 to 100.\n"
-        << "To end the program, enter -1.\n\n";
+        << "To end the program, enter -1.\n"
+        << "Only the highest four scores are counted.\n\n";
 
     vector<int> scores;
     int score = 0;
@@ -19,7 +20,8 @@ int main()
         cout << "Enter score: ";
         cin >> score;
 
-        if (cin.eof()){ // user really doesn't want to enter a score so bail out
+        // user really doesn't want to enter a score, so bail out
+        if (cin.eof()){
             cin.clear();
             //cin.ignore(1000, '\n');
             score = -1;
@@ -35,7 +37,7 @@ int main()
         else if (score < -1) {
             cout << "Score can't be a negative number. Try again.\n";
         }
-        else if (score > -1) {     // valid score � add to vector
+        else if (score > -1) {     // valid score, add to vector
             scores.push_back(score);
         }
     }
@@ -44,7 +46,7 @@ int main()
         cout << "\nNo scores entered.\n";
     }
     else if(scores.size() < 5){
-        cout << "Less than 5 scores entered.\n";
+        cout << "\nLess than 5 scores entered\n";
     }
     else {                                 // vector contains scores
         sort(scores.begin(), scores.end(), [](const int a, const int b){ // lambda function to configure std::sort
@@ -63,6 +65,7 @@ int main()
         cout << "\nHighest score: " << scores[0]
             <<"\nLowest score: " << scores[scores.size()-1];
 
+        // count perfect scores
         int perfects = 0;
         for (int score : scores){
             if (score == 100){ ++perfects; }
