@@ -11,7 +11,8 @@ double calculate_gross_pay(double hours, double payrate){
     if (hours > 40){
         // hours - 40 gives the overtime hours
         // 40*payrate works because we know we worked at least 40 hours
-        gross = 1.5*(hours-40)*payrate + 40*payrate;
+        //gross = 1.5*(hours-40)*payrate + 40*payrate;
+        gross = payrate*(1.5*(hours-40)+40);
     }
     else {
         gross = hours*payrate;
