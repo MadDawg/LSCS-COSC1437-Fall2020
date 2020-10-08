@@ -2,7 +2,7 @@
 #include <string>
 //#include <cctype>
 #include <algorithm>
-//#include <limits>
+#include <limits>
 
 using namespace std;
 
@@ -53,11 +53,13 @@ int main() {
         cout << "Do you wish to continue? Type y or n: ";
         string choice;
         cin >> choice;
-        cin.ignore();
-        to_lower(choice);
 
         while(true){
-            if (choice == "y" || choice == "yes"){ break; }
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            to_lower(choice);
+            if (choice == "y" || choice == "yes"){
+              break;
+            }
             else if (choice == "n" || choice == "no"){
                 cout << "Bye!\n";
                 return 0;
