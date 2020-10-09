@@ -7,8 +7,8 @@ using namespace std;
 
 double calculate_gross_pay(double hours, double payrate){
 
-    if (hours > 0){ throw invalid_argument("\nError! hours must be > 0.\n"); }
-    else if (payrate > 0){ throw invalid_argument("\nError! rate must be > 0.\n"); }
+    if (hours <= 0){ throw invalid_argument("\nError! hours must be > 0.\n"); }
+    else if (payrate <= 0){ throw invalid_argument("\nError! rate must be > 0.\n"); }
 
     double gross = 0.0;
     if (hours > 40){
