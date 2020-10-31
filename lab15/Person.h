@@ -4,18 +4,33 @@
 #include <string>
 
 class Person{
-// friend functions of derived classes
-// cannot access private members (haha) of descendants
-protected:
-    std::string email_address;
-    std::string first_name;
-    std::string last_name;
+private:
+    std::string email_address_;
+    std::string first_name_;
+    std::string last_name_;
 protected:
     // we do not want to just create an abstract Person
     // but we do want the ctor(s) to be inherited
+
+    // default constructor is required in this case, default params are insufficient
+    // see: https://stackoverflow.com/questions/36672027/no-matching-function-for-call-to-constructor
+    Person();
     Person(const std::string&, const std::string&, const std::string&);
 public:
     std::string full_name() const;
+    // std::string to_string() const;
+
+    // getters
+    std::string first_name() const;
+    std::string last_name() const;
+    std::string email_address() const;
+    std::string email() const; // function alias
+
+    //setters
+    void first_name(const std::string&);
+    void last_name(const std::string&);
+    void email_address(const std::string&);
+    void email(const std::string&); // function alias
 };
 
 #endif
