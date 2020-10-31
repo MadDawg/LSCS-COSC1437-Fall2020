@@ -13,11 +13,9 @@ protected:
 protected:
     // we do not want to just create an abstract Person
     // but we do want the ctor(s) to be inherited
-    //Person();
     Person(const std::string&, const std::string&, const std::string&);
 public:
     std::string full_name() const;
-    //friend std::ostream& operator<<(std::ostream&, const Person&);
 };
 
 #endif
