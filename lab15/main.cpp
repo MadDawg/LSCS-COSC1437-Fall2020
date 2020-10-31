@@ -8,29 +8,6 @@
 
 using namespace std;
 
-/*bool ask_repeat(const char* question = "Continue?", const char* choices = "yn"){
-    // assumes we only have 2 choices
-    cout << "\n\n"
-        << question
-        << '(' << choices[0] << '/' << choices[1] << "): ";
-    char choice;
-
-    while(true){
-        cin >> choice;
-        choice = tolower(choice);
-
-        // else clauses unneeded due to break/return
-        if (choice == 'y'){ return true; }
-        if (choice == 'n'){
-            //cout << "\nBye!\n";
-            return false; // We're done here. Exit program.
-        }
-        cout << "Please enter \'" << choices[0]
-            << "\' or \'" << choices[1] << "\': ";
-    }
-}*/
-
-
 int main(){
     cout << "Customer/Employee Data Entry\n";
 
