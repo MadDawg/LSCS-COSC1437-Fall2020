@@ -21,7 +21,6 @@ string get_value(const std::string& field){
     return value;
 }
 
-
 int main(){
     cout << "Customer/Employee Data Entry\n";
 

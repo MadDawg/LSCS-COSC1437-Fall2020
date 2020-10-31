@@ -1,7 +1,6 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
-#include <ostream>
 #include "Person.h"
 
 class Customer : virtual public Person{

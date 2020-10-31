@@ -19,6 +19,11 @@ std::string Person::full_name() const{
     return first_name_ + ' ' + last_name_;
 }
 
+std::string Person::to_string() const{
+    return "Name: " + full_name()
+        + "\nEmail: " + email_address();
+}
+
 // getters
 std::string Person::first_name() const{
     return first_name_;
@@ -51,4 +56,8 @@ void Person::email_address(const std::string& email){
 
 void Person::email(const std::string& email){
     email_address(email);
+}
+
+std::ostream& operator<<(std::ostream& os, const Person& person){
+    return os << person.to_string();
 }

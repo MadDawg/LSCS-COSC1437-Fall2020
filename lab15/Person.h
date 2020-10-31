@@ -1,6 +1,7 @@
 #ifndef PERSON_H
 #define PERSON_H
 
+#include <ostream>
 #include <string>
 
 class Person{
@@ -20,7 +21,7 @@ protected:
     Person(const std::string&, const std::string&, const std::string&);
 public:
     std::string full_name() const;
-    // std::string to_string() const;
+    std::string to_string() const;
 
     // getters
     std::string first_name() const;

@@ -1,7 +1,6 @@
 #ifndef EMPLOYEE_H
 #define EMPLOYEE_H
 
-#include <ostream>
 #include "Person.h"
 
 class Employee : virtual public Person{
