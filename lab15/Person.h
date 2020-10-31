@@ -12,6 +12,8 @@ protected:
     // we do not want to just create an abstract Person
     // but we do want the ctor(s) to be inherited
 
+    // we won't bother with pure virtual destructors here
+
     // default constructor is required in this case, default params are insufficient
     // see: https://stackoverflow.com/questions/36672027/no-matching-function-for-call-to-constructor
     Person();

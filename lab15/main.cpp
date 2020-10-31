@@ -5,6 +5,7 @@
 // https://www.cprogramming.com/tutorial/virtual_inheritance.html
 
 #include <iostream>
+#include <limits>
 //#include "Person.h" // included in Customer.h and Employee.h
 #include "Customer.h"
 #include "Employee.h"
@@ -30,6 +31,11 @@ int main(){
 
         while(true){
             cin >> choice;
+            if(!cin){ // flaky
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.clear();
+                choice = 0;
+            }
             choice = tolower(choice);
 
             if (choice == 'c' || choice == 'e' || choice == 's'){
@@ -38,31 +44,20 @@ int main(){
             cout << "Please enter \'c\', \'e\', or \'s\': ";
         }
 
-        string first_name, last_name, email;
-
-        cout << "First name: ";
-        cin >> first_name;
-
-        cout << "Last name: ";
-        cin >> last_name;
-
-        cout << "Email: ";
-        cin >> email;
+        string first_name = get_value("First name: ");
+        string last_name = get_value("Last name: ");
+        string email = get_value("Email: ");
 
         // one of these should be reachable
         if (choice == 'c'){
-            cout << "Number: ";
-            string customer_number;
-            cin >> customer_number;
+            string customer_number = get_value("Number: ");
 
             Customer customer(first_name, last_name, email, customer_number);
             cout << "\nCUSTOMER\n" << customer << '\n';
         }
 
         if (choice == 'e'){
-            cout << "SSN: ";
-            string ssn;
-            cin >> ssn;
+            string ssn = get_value("SSN: ");
 
             Employee employee(first_name, last_name, email, ssn);
             cout << "\nEMPLOYEE\n" << employee << '\n';
@@ -75,13 +70,17 @@ int main(){
 
             Student student(first_name, last_name, email, sid, customer_number, ssn);
             cout << "\nStudent\n" << student << '\n';
-
         }
 
         cout << "\nContinue? (y/n): ";
 
         while(true){
             cin >> choice;
+            if(!cin){
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.clear();
+                choice = 0;
+            }
             choice = tolower(choice);
 
             // else clauses unneeded due to break/return
