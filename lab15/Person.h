@@ -36,4 +36,6 @@ public:
     void email(const std::string&); // function alias
 };
 
+std::ostream& operator<<(std::ostream&, const Person&);
+
 #endif

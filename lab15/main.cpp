@@ -6,14 +6,15 @@
 
 #include <iostream>
 #include <limits>
+//#include <string> // included in Person.h
 //#include "Person.h" // included in Customer.h and Employee.h
 #include "Customer.h"
 #include "Employee.h"
 #include "Student.h"
-// #include <string> // included in Person.h
 
 using namespace std;
 
+// a convenience function to DRY some things off
 string get_value(const std::string& field){
     cout << field;
     string value;
@@ -68,7 +69,7 @@ int main(){
             string ssn = get_value("SSN: ");
 
             Student student(first_name, last_name, email, sid, customer_number, ssn);
-            cout << "\nStudent\n" << student << '\n';
+            cout << "\nSTUDENT\n" << student << '\n';
         }
 
         cout << "\nContinue? (y/n): ";
