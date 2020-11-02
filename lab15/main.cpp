@@ -1,6 +1,8 @@
 // Written by Cornell Washington
 
 // https://en.wikipedia.org/wiki/Virtual_inheritance
+// https://en.cppreference.com/w/cpp/language/derived_class
+// https://en.cppreference.com/w/cpp/language/virtual
 // https://pencilprogrammer.com/cpp-tutorials/virtual-inheritance/
 // https://www.cprogramming.com/tutorial/virtual_inheritance.html
 
@@ -64,7 +66,7 @@ int main(){
         }
 
         if (choice == 's'){
-            string customer_number = get_value("Number: ");
+            string customer_number = get_value("Customer Number: ");
             string sid = get_value("Student ID: ");
             string ssn = get_value("SSN: ");
 
