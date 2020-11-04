@@ -8,10 +8,10 @@
 
 #include <iostream>
 #include <limits>
-//#include <string> // included in Person.h
-//#include "Person.h" // included in Customer.h and Employee.h
-#include "Customer.h"
-#include "Employee.h"
+// #include <string> // included in Person.h
+// #include "Person.h" // included in Customer.h and Employee.h
+// #include "Customer.h" // included in Student.h
+// #include "Employee.h" // included in Student.h
 #include "Student.h"
 
 using namespace std;
