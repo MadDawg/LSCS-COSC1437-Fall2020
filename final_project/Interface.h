@@ -6,9 +6,10 @@
 #include <iomanip>
 #include <map>
 #include <limits>
-#include <sstream>
+//#include <sstream>
 #include "Grade.h"
 
+// convert string to lowercase to make input checks less tedious
 inline void to_lower(std::string& str){
     for (unsigned i = 0; i < str.size(); ++i){
         char& c = str[i];
@@ -16,6 +17,7 @@ inline void to_lower(std::string& str){
     }
 }
 
+// simply adds add up the scores scores
 inline double calculate_score(const std::vector<Grade>& grades){
     double course_grade = 0.0;
     for (unsigned i = 0; i < grades.size(); i++){
@@ -25,12 +27,14 @@ inline double calculate_score(const std::vector<Grade>& grades){
 }
 
 // I'm normally not a fan of these kinds of functions but eh...
+// subtract earned_score from target_score; return zero if earned_score is greater
 inline double subtract_scores(double target_score, double earned_score){
     double score = target_score - earned_score;
     if (score < 0.0) return 0.0;
     return score;
 }
 
+// list assignments AND scores needed to reach each letter grade
 inline void list_assignments(const std::vector<Grade>& grades){
     const double max_course_score = 2000.0;
     const std::map<char,double> course_scores = {
@@ -43,7 +47,6 @@ inline void list_assignments(const std::vector<Grade>& grades){
     double earned_course_score = calculate_score(grades);
 
     std::cout << "+----+-------------------+-----+\n";
-    // we should be using for_each here...
     for (unsigned i = 0; i < grades.size(); ++i){
         const Grade& grade = grades[i];
         std::cout << "| " << std::left << std::setw(3) << i+1 << "| "
@@ -53,21 +56,24 @@ inline void list_assignments(const std::vector<Grade>& grades){
             << "+----+-------------------+-----+\n";
     }
 
+    std::cout << "Max possible score: " << max_course_score << '\n'
+        << "Score earned: " << earned_course_score << '\n';
+
     std::cout << "Score needed to earn a perfect score: "
         << subtract_scores(max_course_score, earned_course_score) << '\n';
 
     for(auto iter = course_scores.begin(); iter != course_scores.end(); ++iter){
-        std::string article = "a";
-        if (iter->first == 'A'/* || iter->first == 'F'*/){ article = "an"; }
+        std::string article = "a"; // grammar
+        if (iter->first == 'A'){ article = "an"; }
         std::cout << "Score needed to earn " << article << ' ' << iter->first << ' '
             << subtract_scores(iter->second, earned_course_score) << '\n';
     }
 }
 
+// edit assignment score (supposed to also edit comments but that doesn't work)
 inline void edit_grade(Grade& grade){
     std::cout << "Editing " << grade.get_title() << ":\n";
 
-    // TODO: validate input!
     std::cout << "Enter score: ";
     double score;
 
@@ -139,10 +145,11 @@ inline void show_grade_details(Grade& grade){
     }
 }
 
+// more like "show main prompt" but eh
 inline bool show_main_menu(std::vector<Grade>& grades){
     bool valid = false;
     while(!valid){
-        std::cout << "\nSelect an assignment, or:\n"
+        std::cout << "\nSelect an assignment from the list, or:\n"
             << "Fill (p)erfects, fill (z)eroes, (l)ist assignments, e(x)it: ";
 
         std::string choice;
@@ -153,12 +160,13 @@ inline bool show_main_menu(std::vector<Grade>& grades){
         // convert choice to integer
         // and check if it falls within the number of assignments
         try{
-            int num_choice = stoi(choice);
+            // stoi throws invalid_argument if conversion fails
+            int num_choice = std::stoi(choice);
             show_grade_details(grades[num_choice-1]);
         }
         catch(std::invalid_argument& e){
             if (choice == "l"){ list_assignments(grades); }
-            else if (choice == "p"){
+            else if (choice == "p"){ // fill with perfect scores
                 for (Grade& grade : grades){
                     if (grade.get_title() == "Abstraction Bonus"){
                         grade.set_score(50.0);
@@ -170,13 +178,13 @@ inline bool show_main_menu(std::vector<Grade>& grades){
                 }
                 std::cout << "Done.\n";
             }
-            else if (choice == "z"){
+            else if (choice == "z"){ // fill with zeroes
                 for (Grade& grade : grades){
                     grade.set_score(0.0);
                 }
                 std::cout << "Done.\n";
             }
-            else if (choice == "q" || choice == "x"){
+            else if (choice == "q" || choice == "x"){ // exit program
                 std::cout << "Terminating.\n";
                 return false;
             }

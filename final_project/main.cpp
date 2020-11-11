@@ -1,21 +1,19 @@
 // Written by Cornell Washington
 
 /*
-* This is a working model of the program.
-* Your program may replicate this example.
-* Or, you may develop your own interface,
+* [...] you may develop your own interface,
 * but it must provide the minimum functionality demonstrated.
 * https://codeboard.io/projects/189532
 */
+
+// We are definitely developing our own interface here.
+// There is no need to manually type assignment names.
 
 // None of these seem to work...
 // https://stackoverflow.com/questions/5605125/why-is-iostreameof-inside-a-loop-condition-i-e-while-stream-eof-cons
 // https://stackoverflow.com/questions/4939251/cin-eof-functionality
 // https://stackoverflow.com/questions/28633195/cannot-cin-ignore-till-eof
 // https://stackoverflow.com/questions/201992/how-to-read-until-eof-from-cin-in-c
-
-// We are definitely developing our own interface here.
-// There is no need to manually type assignment names.
 
 // "grade" and "assignment" are effectively synonymous
 
