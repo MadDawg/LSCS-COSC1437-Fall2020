@@ -1,4 +1,6 @@
-#include "Grade.h"
+#ifndef COSC_INTERFACE_H
+#define COSC_INTERFACE_H
+
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
@@ -185,3 +187,5 @@ inline bool show_main_menu(std::vector<Grade>& grades){
     }
     return true;
 }
+
+#endif
