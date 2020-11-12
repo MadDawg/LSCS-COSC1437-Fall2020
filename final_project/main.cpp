@@ -22,7 +22,7 @@
 using namespace std;
 
 int main(){
-    // extra credit is assumed to be a seperate grade.
+    // extra credit is assumed to be a separate grade.
     vector<Grade> grades = {
         Grade("Week 1 Lab", 0.0, 100.0),
         Grade("Week 2 Lab", 0.0, 100.0),
@@ -41,6 +41,7 @@ int main(){
     };
 
     list_assignments(grades);
+    //calculate_earned_course_score(grades);
 
     bool keep_going = true;
     while(keep_going){

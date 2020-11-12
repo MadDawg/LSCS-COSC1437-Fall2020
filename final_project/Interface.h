@@ -17,8 +17,8 @@ inline void to_lower(std::string& str){
     }
 }
 
-// simply adds add up the scores scores
-inline double calculate_score(const std::vector<Grade>& grades){
+// simply adds add up the scores
+inline double accumulate_score(const std::vector<Grade>& grades){
     double course_grade = 0.0;
     for (unsigned i = 0; i < grades.size(); i++){
         course_grade += grades[i].get_score();
@@ -34,8 +34,8 @@ inline double subtract_scores(double target_score, double earned_score){
     return score;
 }
 
-// list assignments AND scores needed to reach each letter grade
-inline void list_assignments(const std::vector<Grade>& grades){
+// calculate scores needed to reach each letter grade
+inline void calculate_earned_course_score(const std::vector<Grade>& grades){
     const double max_course_score = 2000.0;
     const std::map<char,double> course_scores = {
         {'A', 1790.0},
@@ -44,17 +44,7 @@ inline void list_assignments(const std::vector<Grade>& grades){
         {'D', 1190.0}
     };
 
-    double earned_course_score = calculate_score(grades);
-
-    std::cout << "+----+-------------------+-----+\n";
-    for (unsigned i = 0; i < grades.size(); ++i){
-        const Grade& grade = grades[i];
-        std::cout << "| " << std::left << std::setw(3) << i+1 << "| "
-            << std::setw(18) // length of "Abstraction Bonus" +1
-            << grade.get_title() << "| " << std::setw(4)
-            << grade.get_score() << "|\n"
-            << "+----+-------------------+-----+\n";
-    }
+    double earned_course_score = accumulate_score(grades);
 
     std::cout << "Max possible score: " << max_course_score << '\n'
         << "Score earned: " << earned_course_score << '\n';
@@ -67,6 +57,25 @@ inline void list_assignments(const std::vector<Grade>& grades){
         if (iter->first == 'A'){ article = "an"; }
         std::cout << "Score needed to earn " << article << ' ' << iter->first << ' '
             << subtract_scores(iter->second, earned_course_score) << '\n';
+    }
+}
+
+// list assignments (and scores needed to reach each letter grade)
+inline void list_assignments(const std::vector<Grade>& grades){
+    // somewhat WET but this is acceptable
+    std::cout << "+----+-------------------+-------+\n";
+    std::cout << "| " << std::left << std::setw(3) << '#' << "| "
+        << std::setw(18) << "Assignment" << "| " << std::setw(6)
+        << "Score" << "|\n"
+        << "+----+-------------------+-------+\n";
+
+    for (unsigned i = 0; i < grades.size(); ++i){
+        const Grade& grade = grades[i];
+        std::cout << "| " << std::left << std::setw(3) << i+1 << "| "
+            << std::setw(18) // length of "Abstraction Bonus" +1
+            << grade.get_title() << "| " << std::setw(6)
+            << grade.get_score() << "|\n"
+            << "+----+-------------------+-------+\n";
     }
 }
 
@@ -145,12 +154,18 @@ inline void show_grade_details(Grade& grade){
     }
 }
 
-// more like "show main prompt" but eh
+// more like "show main prompt"
 inline bool show_main_menu(std::vector<Grade>& grades){
     bool valid = false;
     while(!valid){
-        std::cout << "\nSelect an assignment from the list, or:\n"
-            << "Fill (p)erfects, fill (z)eroes, (l)ist assignments, e(x)it: ";
+        std::cout << "\n- Select an assignment from the list (1-" << grades.size() << ")\n"
+            << "- (L)ist assignments\n"
+            << "- (S)how course grade\n"
+            << "- Fill (p)erfects\n"
+            << "- Fill (z)eroes\n"
+            << "- Edit (a)ll\n"
+            << "- E(x)it\n"
+            << "> ";
 
         std::string choice;
         std::cin >> choice;
@@ -162,10 +177,22 @@ inline bool show_main_menu(std::vector<Grade>& grades){
         try{
             // stoi throws invalid_argument if conversion fails
             int num_choice = std::stoi(choice);
+            // assignment chosen
             show_grade_details(grades[num_choice-1]);
         }
         catch(std::invalid_argument& e){
-            if (choice == "l"){ list_assignments(grades); }
+            if (choice == "l"){
+                list_assignments(grades);
+                //calculate_earned_course_score(grades);
+            }
+            else if (choice == "s"){
+                calculate_earned_course_score(grades);
+            }
+            else if(choice == "a"){
+                for (Grade& grade : grades){
+                    edit_grade(grade);
+                }
+            }
             else if (choice == "p"){ // fill with perfect scores
                 for (Grade& grade : grades){
                     if (grade.get_title() == "Abstraction Bonus"){
