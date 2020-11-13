@@ -1,5 +1,9 @@
 // Written by Cornell Washington
 
+/*TODO:
+* add TSV parser (import/export assignments)
+*/
+
 /*
 * [...] you may develop your own interface,
 * but it must provide the minimum functionality demonstrated.
@@ -23,7 +27,8 @@ using namespace std;
 
 int main(){
     // extra credit is assumed to be a separate grade.
-    vector<Grade> grades = {
+    vector<Grade> grades;
+    /*vector<Grade> grades = {
         Grade("Week 1 Lab", 0.0, 100.0),
         Grade("Week 2 Lab", 0.0, 100.0),
         Grade("Chapter 1 Lab", 0.0, 100.0),
@@ -38,14 +43,15 @@ int main(){
         Grade("Chapter 17 Lab", 0.0, 100.0),
         Grade("Abstraction Bonus", 0.0, 50.0),
         Grade("Final Project", 0.0, 300.0)
-    };
+    };*/
 
+    double max_course_score = get_max_course_score();
     list_assignments(grades);
     //calculate_earned_course_score(grades);
 
     bool keep_going = true;
     while(keep_going){
-        keep_going = show_main_menu(grades);
+        keep_going = show_main_menu(grades, max_course_score);
     }
     return 0;
 }

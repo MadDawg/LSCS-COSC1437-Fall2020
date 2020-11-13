@@ -47,6 +47,7 @@ std::vector<std::string>& Grade::get_comments(){
 
 // check if score is > max score
 // and make appropriate correction
+// this is still flimsy though (e.g. max_score_ < 0)
 void Grade::sanitize(){
     if (score_ > max_score_){
         score_ = max_score_;

@@ -17,6 +17,67 @@ inline void to_lower(std::string& str){
     }
 }
 
+// DRY off user input checks
+// get_value may be ambiguous, so we'll specify that we want data from stdin
+// TODO: consider making this templated
+template <typename T>
+inline T get_stdin_value(){
+    T value;
+    while (true){
+        std::cin >> value;
+        if (!std::cin){
+            std::cout << "Invalid input. Try again: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        else {
+            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            return value;
+        }
+    }
+}
+
+// simply gets the maximum possible score for the class from the user
+inline double get_max_course_score(){
+    std::cout << "Enter the maximum score that can be earned in the course: ";
+    double max_course_score;
+
+    while (true){
+        max_course_score = get_stdin_value<double>();
+        if (max_course_score < 0.0){
+            std::cout << "Score must be zero or greater. Try again: ";
+        }
+        else{ return max_course_score; }
+    }
+}
+
+// helper function for add_assignment and edit_assignment
+// collects and assigns data for constructing or editing Grades
+inline void collect_grade_data(std::string& name, double& max_score, double& score){
+    std::cout << "Enter new assignment name: ";
+    name = get_stdin_value<std::string>();
+
+    std::cout << "Enter maximum possible score for assignment: ";
+    max_score = get_stdin_value<double>();
+
+    std::cout << "Enter score earned on assignment: ";
+    score = get_stdin_value<double>();
+    while(score > max_score){
+        std::cout << "Earned score is greater than maximum score. "
+            << "Try again: ";
+        score = get_stdin_value<double>();
+    }
+
+}
+// add_assignment and edit_assignment are somewhat WET
+// but I really wanted to use emplace_back
+inline void add_assignment(std::vector<Grade>& grades){
+    std::string name;
+    double max_score, score;
+    collect_grade_data(name, max_score, score);
+    grades.emplace_back(name, score, max_score);
+}
+
 // simply adds add up the scores
 inline double accumulate_score(const std::vector<Grade>& grades){
     double course_grade = 0.0;
@@ -35,13 +96,14 @@ inline double subtract_scores(double target_score, double earned_score){
 }
 
 // calculate scores needed to reach each letter grade
-inline void calculate_earned_course_score(const std::vector<Grade>& grades){
-    const double max_course_score = 2000.0;
+// Note: we are assuming, for example, that a D is always 59.5.
+// This is not always the case.
+inline void calculate_earned_course_score(const std::vector<Grade>& grades, const double max_course_score){
     const std::map<char,double> course_scores = {
-        {'A', 1790.0},
-        {'B', 1590.0},
-        {'C', 1390.0},
-        {'D', 1190.0}
+        {'A', max_course_score*0.895},
+        {'B', max_course_score*0.795},
+        {'C', max_course_score*0.695},
+        {'D', max_course_score*0.595}
     };
 
     double earned_course_score = accumulate_score(grades);
@@ -62,6 +124,11 @@ inline void calculate_earned_course_score(const std::vector<Grade>& grades){
 
 // list assignments (and scores needed to reach each letter grade)
 inline void list_assignments(const std::vector<Grade>& grades){
+    if (grades.empty()){
+        std::cout << "There are currently no assignments to list.\n";
+        return;
+    }
+
     // somewhat WET but this is acceptable
     std::cout << "+----+-------------------+-------+\n";
     std::cout << "| " << std::left << std::setw(3) << '#' << "| "
@@ -81,35 +148,13 @@ inline void list_assignments(const std::vector<Grade>& grades){
 
 // edit assignment score (supposed to also edit comments but that doesn't work)
 inline void edit_grade(Grade& grade){
-    std::cout << "Editing " << grade.get_title() << ":\n";
+    std::cout << "Editing \"" << grade.get_title() << "\"...\n";
 
-    std::cout << "Enter score: ";
-    double score;
+    std::string name;
+    double max_score, score;
+    collect_grade_data(name, max_score, score);
 
-    while (true){
-        std::cin >> score;
-        if (!std::cin){
-            std::cout << "Invalid input.\n";
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        else {
-            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            break;
-        }
-    }
-
-    if (score < 0){
-        std::cout << "Entered score is too small; assigning zero.\n";
-        grade.set_score(0.0);
-    }
-    else if (score > grade.get_max_score()){
-        std::cout << "Entered score is too large; assigning perfect score.\n";
-        grade.set_score(grade.get_max_score());
-    }
-    else{
-        grade.set_score(score);
-    }
+    grade.set_score(score);
 
     // B R O K E N! How does anyone do EOF stuff in C++?
     /*std::cout << "Enter comments (CTRL+D to finish): ";
@@ -126,10 +171,16 @@ inline void edit_grade(Grade& grade){
 }
 
 // not const ref because we want to edit this
-inline void show_grade_details(Grade& grade){
+inline void show_grade_details(std::vector<Grade>& grades, unsigned index){
+    Grade& grade = grades[index];
     while(true){
         std::cout << grade << '\n';
-        std::cout << "(E)dit grade, (c)lear comments, or (r)eturn to main menu: ";
+        std::cout << "What would you like to do?\n"
+            << "- e: Edit assignment\n"
+            << "- c: Clear comments\n"
+            << "- d: Remove assignment\n"
+            << "- r: Return to main menu\n"
+            << "Enter choice:  ";
         std::string choice;
 
         while(true){
@@ -149,23 +200,42 @@ inline void show_grade_details(Grade& grade){
                 std::cout << "Comments cleared.\n";
                 break;
             }
-            std::cout << "Enter 'e', 'c', or 'r': ";
+            // TODO: ask for confirmation
+            if (choice == "d"){
+                auto it = grades.begin();
+                std::cout << "Deleting \"" << grade.get_title() << "\"...\n";
+                grades.erase(it+index);
+                std::cout << "Done.\n";
+                return;
+            }
+            std::cout << "Enter 'e', 'c', 'd', or 'r': ";
         }
     }
 }
 
-// more like "show main prompt"
-inline bool show_main_menu(std::vector<Grade>& grades){
+// max_course_score is ref because we want to be able to OPTIONALLY edit it
+inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score){
     bool valid = false;
     while(!valid){
-        std::cout << "\n- Select an assignment from the list (1-" << grades.size() << ")\n"
-            << "- (L)ist assignments\n"
-            << "- (S)how course grade\n"
-            << "- Fill (p)erfects\n"
-            << "- Fill (z)eroes\n"
-            << "- Edit (a)ll\n"
-            << "- E(x)it\n"
-            << "> ";
+        std::cout << "What would you like to do?\n";
+        if (grades.size() > 1){
+            std::cout << "\n- 1-" << grades.size() << ": Select an assignment from the list\n";
+        }
+        else if (grades.size() == 1){
+            std::cout << "\n- 1: Select assignment\n";
+        }
+        std::cout << "- l: List assignments\n"
+            << "- m: Edit maximum course score\n"
+            << "- g: Show course score information\n"
+            << "- a: Add assignment\n"
+            << "- d: Remove assignment\n"
+            //<<"- i: Import assignments\n"
+            //<<"- e: Export assignments\n"
+            << "- p: Fill perfects\n"
+            << "- z: Fill zeroes\n"
+            //<< "- e: Edit all\n"
+            << "- x: Exit\n"
+            << "Enter choice: ";
 
         std::string choice;
         std::cin >> choice;
@@ -177,35 +247,93 @@ inline bool show_main_menu(std::vector<Grade>& grades){
         try{
             // stoi throws invalid_argument if conversion fails
             int num_choice = std::stoi(choice);
-            // assignment chosen
-            show_grade_details(grades[num_choice-1]);
+            // assignment chosen (if it exists)
+            if (static_cast<unsigned>(num_choice) > grades.size() || num_choice < 1){
+                std::cout << "Assignment " << num_choice << " does not exist.\n";
+                return true;
+            }
+            // implicit cast to unsigned
+            show_grade_details(grades, num_choice-1);
         }
         catch(std::invalid_argument& e){
             if (choice == "l"){
                 list_assignments(grades);
                 //calculate_earned_course_score(grades);
             }
-            else if (choice == "s"){
-                calculate_earned_course_score(grades);
+            else if (choice == "m"){
+                max_course_score = get_max_course_score();
             }
-            else if(choice == "a"){
+            else if (choice == "a"){
+                add_assignment(grades);
+            }
+            // TODO: ask for confirmation
+            else if (choice == "d"){
+                if (!grades.empty()){
+                    if (grades.size() == 1){
+                        grades.clear();
+                        std::cout << "Assignment removed.\n";
+                        return true;
+                    }
+                    std::cout << "Choose an assignment to remove "
+                        << "1-" << grades.size() << " or 'a' for all: ";
+
+                    while(true){
+                        // we can reuse this
+                        choice = get_stdin_value<std::string>();
+                        try{
+                            // reusing this also
+                            int num_choice = std::stoi(choice);
+                            if (static_cast<unsigned>(num_choice) > grades.size() || num_choice < 1){
+                                std::cout << "Assignment " << num_choice << " does not exist.\n";
+                                return true;
+                            }
+                            auto iter = grades.begin();
+                            std::cout << "Removing \""
+                                << (iter+num_choice-1)->get_title() << "\"...\n";
+
+                            grades.erase(iter+num_choice-1);
+                            std::cout << "Done.\n";
+                            return true;
+                        }
+                        catch(std::invalid_argument& err){
+                            if(choice == "a"){
+                                std::cout << "All assignments removed.\n";
+                                return true;
+                            }
+                            std::cout << "Invalid input. Try again: ";
+                        }
+                    }
+                }
+                std::cout << "There are no assignments to remove.\n";
+
+            }
+            else if (choice == "g"){
+                calculate_earned_course_score(grades, max_course_score);
+            }
+            /*else if(choice == "e"){
+                if (grades.empty()){
+                    std::cout << "There are no grades to edit!\n";
+                    return true;
+                }
                 for (Grade& grade : grades){
                     edit_grade(grade);
                 }
-            }
+            }*/
             else if (choice == "p"){ // fill with perfect scores
+                if (grades.empty()){
+                    std::cout << "There are no grades to edit!\n";
+                    return true;
+                }
                 for (Grade& grade : grades){
-                    if (grade.get_title() == "Abstraction Bonus"){
-                        grade.set_score(50.0);
-                    }
-                    else if (grade.get_title() == "Final Project"){
-                        grade.set_score(300.0);
-                    }
-                    else { grade.set_score(100.0); }
+                    grade.set_score(grade.get_max_score());
                 }
                 std::cout << "Done.\n";
             }
             else if (choice == "z"){ // fill with zeroes
+                if (grades.empty()){
+                    std::cout << "There are no grades to edit!\n";
+                    return true;
+                }
                 for (Grade& grade : grades){
                     grade.set_score(0.0);
                 }
