@@ -135,10 +135,10 @@ inline void add_assignment(std::vector<Grade>& grades){
     grades.emplace_back(name, score, max_score);
 }
 
-// simply adds add up the scores
+// simply adds up the scores
 inline double accumulate_score(const std::vector<Grade>& grades){
     double course_grade = 0.0;
-    for (unsigned i = 0; i < grades.size(); i++){
+    for (unsigned i = 0; i < grades.size(); ++i){
         course_grade += grades[i].get_score();
     }
     return course_grade;
@@ -260,7 +260,7 @@ inline void show_grade_details(std::vector<Grade>& grades, unsigned index){
             // TODO: ask for confirmation
             if (choice == "d"){
                 auto it = grades.begin();
-                std::cout << "Deleting \"" << grade.get_title() << "\"...\n";
+                std::cout << "Removing \"" << grade.get_title() << "\"...\n";
                 grades.erase(it+index);
                 std::cout << "Done.\n";
                 return;
@@ -356,6 +356,7 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
                         }
                         catch(std::invalid_argument& err){
                             if(choice == "a"){
+                                grades.clear();
                                 std::cout << "All assignments removed.\n";
                                 return true;
                             }
