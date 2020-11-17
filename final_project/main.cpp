@@ -11,7 +11,6 @@
 */
 
 // We are definitely developing our own interface here.
-// There is no need to manually type assignment names.
 
 // None of these seem to work...
 // https://stackoverflow.com/questions/5605125/why-is-iostreameof-inside-a-loop-condition-i-e-while-stream-eof-cons

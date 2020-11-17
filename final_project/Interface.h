@@ -6,7 +6,9 @@
 #include <iomanip>
 #include <map>
 #include <limits>
-//#include <sstream>
+#include <fstream>
+#include <sstream>
+#include <regex>
 #include "Grade.h"
 
 // convert string to lowercase to make input checks less tedious
@@ -17,9 +19,64 @@ inline void to_lower(std::string& str){
     }
 }
 
+// currently does not check for dupes
+inline void import_grades(const std::string& filename, std::vector<Grade>& grades){
+    std::ifstream ifs(filename);
+    if (!ifs){
+        std::cout << "Could not open file \"" << filename << "\".\n"
+            << "Make sure file exists and is readable\n";
+    }
+    int i = 0;
+    while(ifs){
+        // using regex here saves us a lot of input checking
+
+        //std::regex expression("^(.+)\\t(\\d+|\\d+\\.\\d+)\\t(\\d+|\\d+\\.\\d+)$");
+        // EOL match ('$') does not seem to work.
+        // This looks to be an issue with the compiler (GCC 9.3.0) itself.
+        // https://stackoverflow.com/questions/61195222/stdregexmultiline-does-not-exist
+        // This expression is good enough;
+        // it will just silently ignore extra trailing data
+        std::regex expression(R"(^(.+)\t(\d+|\d+\.\d+)\t(\d+|\d+\.\d+))");
+        std::smatch matches;
+        std::string line;
+
+        std::getline(ifs, line);
+
+        if(std::regex_search(line, matches, expression)){
+            std::string title = matches[1].str();
+            double score = std::stod(matches[2].str());
+            double max_score = std::stod(matches[3].str());
+            grades.emplace_back(title, score, max_score);
+            ++i;
+        }
+    }
+    std::cout << i << " assignments imported.\n";
+}
+
+inline void export_grades(const std::string& filename, const std::vector<Grade>& grades){
+    // we want to overwrite the file,
+    // but we also want to be sure we get every assignment
+    std::ofstream ofs(filename);
+    std::stringstream ss;
+    for (const Grade& grade : grades){
+        ss << grade.get_title() << '\t' << grade.get_max_score()
+            << '\t' << grade.get_score() << '\n';
+    }
+    ofs << ss.str();
+    try{
+        ofs.exceptions(ofs.failbit);
+    }
+    catch(const std::ios_base::failure& e){
+        // message does not cover every failure mode, but mentioning permissions
+        // should be sufficient in directing the user toward the solution
+        std::cout << "Could not write to file \"" << filename << "\".\n"
+            << "Make sure directory exists and is writable.\n";
+    }
+
+}
+
 // DRY off user input checks
 // get_value may be ambiguous, so we'll specify that we want data from stdin
-// TODO: consider making this templated
 template <typename T>
 inline T get_stdin_value(){
     T value;
@@ -229,11 +286,10 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
             << "- g: Show course score information\n"
             << "- a: Add assignment\n"
             << "- d: Remove assignment\n"
-            //<<"- i: Import assignments\n"
-            //<<"- e: Export assignments\n"
+            << "- i: Import assignments\n"
+            << "- e: Export assignments\n"
             << "- p: Fill perfects\n"
             << "- z: Fill zeroes\n"
-            //<< "- e: Edit all\n"
             << "- x: Exit\n"
             << "Enter choice: ";
 
@@ -262,6 +318,9 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
             }
             else if (choice == "m"){
                 max_course_score = get_max_course_score();
+            }
+            else if (choice == "g"){
+                calculate_earned_course_score(grades, max_course_score);
             }
             else if (choice == "a"){
                 add_assignment(grades);
@@ -307,21 +366,23 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
                 std::cout << "There are no assignments to remove.\n";
 
             }
-            else if (choice == "g"){
-                calculate_earned_course_score(grades, max_course_score);
+            else if (choice == "i"){
+                std::cout << "Enter filename: ";
+                std::string filename = get_stdin_value<std::string>();
+                import_grades(filename, grades);
             }
-            /*else if(choice == "e"){
+            else if(choice == "e"){
                 if (grades.empty()){
-                    std::cout << "There are no grades to edit!\n";
+                    std::cout << "There are no grades to export.\n";
                     return true;
                 }
-                for (Grade& grade : grades){
-                    edit_grade(grade);
-                }
-            }*/
+                std::cout << "Enter filename: ";
+                std::string filename = get_stdin_value<std::string>();
+                export_grades(filename, grades);
+            }
             else if (choice == "p"){ // fill with perfect scores
                 if (grades.empty()){
-                    std::cout << "There are no grades to edit!\n";
+                    std::cout << "There are no grades to edit.\n";
                     return true;
                 }
                 for (Grade& grade : grades){
@@ -331,7 +392,7 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
             }
             else if (choice == "z"){ // fill with zeroes
                 if (grades.empty()){
-                    std::cout << "There are no grades to edit!\n";
+                    std::cout << "There are no grades to edit.\n";
                     return true;
                 }
                 for (Grade& grade : grades){
