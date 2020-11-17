@@ -9,12 +9,13 @@
 // does not check if score is greater than max score
 Grade::Grade(const std::string& title,
     const double score = 0.0,
-    const double max_score = 100.0){
+    const double max_score = 100.0,
+    const std::string& comments="none\n"){
 
     max_score_ = max_score;
     set_score(score);
     set_title(title);
-    // comments vector will just be initialized by its default constructor
+    comments_ = comments;
 }
 
 double Grade::get_score() const{
@@ -41,8 +42,12 @@ void Grade::set_title(const std::string& title){
     title_ = title;
 }
 
-std::vector<std::string>& Grade::get_comments(){
+std::string Grade::get_comments() const{
     return comments_;
+}
+
+void Grade::add_comment(const std::string& comment){
+    comments_ += comment;
 }
 
 // check if score is > max score
@@ -61,17 +66,9 @@ void Grade::clear_comments(){
 std::ostream& operator<<(std::ostream& os, Grade& grade){
     os << "\nAssignment: " << grade.get_title()
         << "\nScore: " << grade.get_score()
-        << "\nComments: ";
+        /*<< "\nComments: " << grade.get_comments()*/;
 
-    std::vector<std::string>& comments = grade.get_comments();
-
-    if (comments.empty()){
-        os << "none\n";
-    }
-
-    // will not execute if comments is empty
-    for (unsigned i = 0; i < comments.size(); ++i){
-        os << i+1 << ". " << comments[i] << '\n';
-    }
+    // I really don't want to mess with the default ctor
+    //if (grade.get_comments() == ""){ os << "none\n"; }
     return os;
 }

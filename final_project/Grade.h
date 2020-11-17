@@ -10,10 +10,10 @@ private:
     double score_;
     double max_score_;
     std::string title_;
-    std::vector<std::string> comments_;
+    std::string comments_;
 public:
     Grade() = default;
-    Grade(const std::string&, const double, const double);
+    Grade(const std::string&, const double, const double, const std::string&);
     ~Grade() = default;
 
     // getter/setter pairs
@@ -26,9 +26,8 @@ public:
     std::string get_title() const;
     void set_title(const std::string&);
 
-    // not marked const as we actually
-    // want to be able to mutate the vector directly
-    std::vector<std::string>& get_comments();
+    std::string get_comments() const;
+    void add_comment(const std::string&);
 
     void sanitize();
     void clear_comments();

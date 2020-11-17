@@ -20,8 +20,6 @@ inline void to_lower(std::string& str){
 }
 
 // currently does not check for dupes nor does it check for sane scores
-// note that filename inputs do not support whitespaces,
-// so file paths must contain no whitespaces
 inline void import_grades(const std::string& filename, std::vector<Grade>& grades){
     std::ifstream ifs(filename);
     if (!ifs){
@@ -33,9 +31,20 @@ inline void import_grades(const std::string& filename, std::vector<Grade>& grade
         // using regex here saves us a lot of input checking
 
         //std::regex expression("^(.+)\\t(\\d+|\\d+\\.\\d+)\\t(\\d+|\\d+\\.\\d+)$");
+
+        // Expression matches beginning of the line
+        // plus any character up to a tab character
+        // plus one+ digits or one+ digits plus a dot and another one+ digits
+        // followed by a tab character
+        // plus one+ digits or one+ digits plus a dot and another one+ digits
+        // followed by a tab character
+
         // EOL match ('$') does not seem to work.
-        // This looks to be an issue with the compiler (GCC 9.3.0) itself.
+        // This looks to be an issue with the compiler
+        // (both GCC 9.3.0 and Clang7) itself.
         // https://stackoverflow.com/questions/61195222/stdregexmultiline-does-not-exist
+        // viewing the header files confirms this.
+
         // This expression is good enough;
         // it will just silently ignore extra trailing data
         std::regex expression(R"(^(.+)\t(\d+|\d+\.\d+)\t(\d+|\d+\.\d+))");
@@ -46,9 +55,9 @@ inline void import_grades(const std::string& filename, std::vector<Grade>& grade
 
         if(std::regex_search(line, matches, expression)){
             std::string title = matches[1].str();
-            double score = std::stod(matches[2].str());
-            double max_score = std::stod(matches[3].str());
-            grades.emplace_back(title, score, max_score);
+            double max_score = std::stod(matches[2].str());
+            double score = std::stod(matches[3].str());
+            grades.emplace_back(title, score, max_score, "none\n");
             ++i;
         }
     }
@@ -137,7 +146,7 @@ inline void add_assignment(std::vector<Grade>& grades){
     std::string name;
     double max_score, score;
     collect_grade_data(name, max_score, score);
-    grades.emplace_back(name, score, max_score);
+    grades.emplace_back(name, score, max_score, "none\n");
 }
 
 // simply adds up the scores
@@ -239,7 +248,7 @@ inline void show_grade_details(std::vector<Grade>& grades, unsigned index){
         std::cout << grade << '\n';
         std::cout << "What would you like to do?\n"
             << "- e: Edit assignment\n"
-            << "- c: Clear comments\n"
+            //<< "- c: Clear comments\n"
             << "- d: Remove assignment\n"
             << "- r: Return to main menu\n"
             << "Enter choice:  ";
@@ -257,11 +266,11 @@ inline void show_grade_details(std::vector<Grade>& grades, unsigned index){
                 std::cout << "Grade updated.\n";
                 break;
             }
-            if (choice == "c"){
+            /*if (choice == "c"){
                 grade.clear_comments();
                 std::cout << "Comments cleared.\n";
                 break;
-            }
+            }*/
             // TODO: ask for confirmation
             if (choice == "d"){
                 auto it = grades.begin();
@@ -270,7 +279,8 @@ inline void show_grade_details(std::vector<Grade>& grades, unsigned index){
                 std::cout << "Done.\n";
                 return;
             }
-            std::cout << "Enter 'e', 'c', 'd', or 'r': ";
+            //std::cout << "Enter 'e', 'c', 'd', or 'r': ";
+            std::cout << "Enter 'e', 'd', or 'r': ";
         }
     }
 }
@@ -339,7 +349,7 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
                         return true;
                     }
                     std::cout << "Choose an assignment to remove "
-                        << "1-" << grades.size() << " or 'a' for all: ";
+                        << "1-" << grades.size() << ", 'a' for all, or 'c' to cancel: ";
 
                     while(true){
                         // we can reuse this
@@ -363,6 +373,10 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
                             if(choice == "a"){
                                 grades.clear();
                                 std::cout << "All assignments removed.\n";
+                                return true;
+                            }
+                            else if (choice == "c" || choice == "n"){
+                                std::cout << "No assignments removed.\n";
                                 return true;
                             }
                             std::cout << "Invalid input. Try again: ";
