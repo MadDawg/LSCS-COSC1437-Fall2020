@@ -19,7 +19,9 @@ inline void to_lower(std::string& str){
     }
 }
 
-// currently does not check for dupes
+// currently does not check for dupes nor does it check for sane scores
+// note that filename inputs do not support whitespaces,
+// so file paths must contain no whitespaces
 inline void import_grades(const std::string& filename, std::vector<Grade>& grades){
     std::ifstream ifs(filename);
     if (!ifs){
@@ -112,7 +114,9 @@ inline double get_max_course_score(){
 // collects and assigns data for constructing or editing Grades
 inline void collect_grade_data(std::string& name, double& max_score, double& score){
     std::cout << "Enter new assignment name: ";
-    name = get_stdin_value<std::string>();
+    //name = get_stdin_value<std::string>();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    getline(std::cin, name);
 
     std::cout << "Enter maximum possible score for assignment: ";
     max_score = get_stdin_value<double>();
@@ -126,6 +130,7 @@ inline void collect_grade_data(std::string& name, double& max_score, double& sco
     }
 
 }
+
 // add_assignment and edit_assignment are somewhat WET
 // but I really wanted to use emplace_back
 inline void add_assignment(std::vector<Grade>& grades){
@@ -369,16 +374,20 @@ inline bool show_main_menu(std::vector<Grade>& grades, double& max_course_score)
             }
             else if (choice == "i"){
                 std::cout << "Enter filename: ";
-                std::string filename = get_stdin_value<std::string>();
+                std::string filename;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::getline(std::cin, filename);
                 import_grades(filename, grades);
             }
             else if(choice == "e"){
                 if (grades.empty()){
-                    std::cout << "There are no grades to export.\n";
+                    std::cout << "There are no assignments to export.\n";
                     return true;
                 }
                 std::cout << "Enter filename: ";
-                std::string filename = get_stdin_value<std::string>();
+                std::string filename;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::getline(std::cin, filename);
                 export_grades(filename, grades);
             }
             else if (choice == "p"){ // fill with perfect scores
