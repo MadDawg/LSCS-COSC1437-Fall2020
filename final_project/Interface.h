@@ -43,7 +43,8 @@ inline void import_grades(const std::string& filename, std::vector<Grade>& grade
         // This looks to be an issue with the compiler
         // (both GCC 9.3.0 and Clang7) itself.
         // https://stackoverflow.com/questions/61195222/stdregexmultiline-does-not-exist
-        // viewing the header files confirms this.
+        // Viewing the header files confirms this.
+        // Note that the multiline feature may not actually help solve the EOL issue.
 
         // This expression is good enough;
         // it will just silently ignore extra trailing data
@@ -152,8 +153,8 @@ inline void add_assignment(std::vector<Grade>& grades){
 // simply adds up the scores
 inline double accumulate_score(const std::vector<Grade>& grades){
     double course_grade = 0.0;
-    for (unsigned i = 0; i < grades.size(); ++i){
-        course_grade += grades[i].get_score();
+    for (const Grade& grade : grades){
+        course_grade += grade.get_score();
     }
     return course_grade;
 }
