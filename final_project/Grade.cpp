@@ -50,10 +50,11 @@ void Grade::add_comment(const std::string& comment){
     comments_ += comment;
 }
 
-// check if score is > max score
-// and make appropriate correction
-// this is still flimsy though (e.g. max_score_ < 0)
 void Grade::sanitize(){
+    if (max_score_ < 0){
+        max_score_ = 0;
+    }
+
     if (score_ > max_score_){
         score_ = max_score_;
     }

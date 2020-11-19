@@ -2,7 +2,6 @@
 #define COSC_GRADE_H
 
 #include <string>
-#include <vector>
 #include <ostream>
 
 class Grade{

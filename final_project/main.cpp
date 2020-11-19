@@ -19,6 +19,7 @@
 #include "Interface.h"
 
 using namespace std;
+using namespace cosc1437_final;
 
 int main(){
     vector<Grade> grades;
