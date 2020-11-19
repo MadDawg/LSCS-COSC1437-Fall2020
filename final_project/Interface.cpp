@@ -280,12 +280,12 @@ namespace cosc1437_final{
     bool show_main_menu(std::vector<Grade>& grades, double& max_course_score){
         bool valid = false;
         while(!valid){
-            std::cout << "What would you like to do?\n";
+            std::cout << "\nWhat would you like to do?\n";
             if (grades.size() > 1){
-                std::cout << "\n- 1-" << grades.size() << ": Select an assignment from the list\n";
+                std::cout << "- 1-" << grades.size() << ": Select an assignment from the list\n";
             }
             else if (grades.size() == 1){
-                std::cout << "\n- 1: Select assignment\n";
+                std::cout << "- 1: Select assignment\n";
             }
             std::cout << "- l: List assignments\n"
                 << "- m: Edit maximum course score\n"
@@ -340,7 +340,7 @@ namespace cosc1437_final{
                             return true;
                         }
                         std::cout << "Choose an assignment to remove "
-                            << "1-" << grades.size() << ", 'a' for all, or 'c' to cancel: ";
+                            << "(1-" << grades.size() << "), 'a' for all, or 'c' to cancel: ";
 
                         while(true){
                             // we can reuse this
