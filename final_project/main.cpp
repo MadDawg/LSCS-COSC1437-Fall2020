@@ -27,9 +27,7 @@ int main(){
     double max_course_score = get_max_course_score();
     list_assignments(grades);
 
-    bool keep_going = true;
-    while(keep_going){
-        keep_going = show_main_menu(grades, max_course_score);
-    }
+    // will loop so long as show_main_menu returns true
+    while(show_main_menu(grades, max_course_score));
     return 0;
 }
