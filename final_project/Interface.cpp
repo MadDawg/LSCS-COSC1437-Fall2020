@@ -60,6 +60,7 @@ namespace cosc1437_final{
         // but we also want to be sure we get every assignment
         std::ofstream ofs(filename);
         std::stringstream ss;
+        ss << "Assignment\tMaximum Score\tEarned Score\n";
         for (const Grade& grade : grades){
             ss << grade.get_title() << '\t' << grade.get_max_score()
                 << '\t' << grade.get_score() << '\n';
