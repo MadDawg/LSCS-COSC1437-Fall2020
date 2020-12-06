@@ -26,7 +26,6 @@ namespace cosc1437_final{
             // plus one+ digits or one+ digits plus a dot and another one+ digits
             // followed by a tab character
             // plus one+ digits or one+ digits plus a dot and another one+ digits
-            // followed by a tab character
 
             // EOL match ('$') does not seem to work.
             // This looks to be an issue with the compiler
@@ -121,15 +120,32 @@ namespace cosc1437_final{
 
         std::cout << "Enter maximum possible score for assignment: ";
         max_score = get_stdin_value<double>();
+        while (max_score < 0.0){
+            std::cout << "Maximum score is less than zero. "
+                << "Try again: ";
+            max_score = get_stdin_value<double>();
+        }
 
         std::cout << "Enter score earned on assignment: ";
         score = get_stdin_value<double>();
-        while(score > max_score){
+        /*while(score > max_score){
             std::cout << "Earned score is greater than maximum score. "
                 << "Try again: ";
             score = get_stdin_value<double>();
+        }*/
+        while(score > max_score || score < 0.0){
+            if (score > max_score){
+                std::cout << "\nWarning: earned score is greater than maximum score!\n"
+                    << "Be aware that using the \"fill perfects\" feature will "
+                    << "set the score equal to maximum score.\n";
+                break;
+            }
+            else if (score < 0.0){
+                std::cout << "Earned score is less than zero. "
+                    << "Try again: ";
+                score = get_stdin_value<double>();
+            }
         }
-
     }
 
     // add_assignment and edit_assignment are somewhat WET
@@ -263,7 +279,6 @@ namespace cosc1437_final{
                     std::cout << "Comments cleared.\n";
                     break;
                 }*/
-                // TODO: ask for confirmation
                 if (choice == "d"){
                     auto it = grades.begin();
                     std::cout << "Removing \"" << grade.get_title() << "\"...\n";
@@ -332,7 +347,6 @@ namespace cosc1437_final{
                 else if (choice == "a"){
                     add_assignment(grades);
                 }
-                // TODO: ask for confirmation
                 else if (choice == "d"){
                     if (!grades.empty()){
                         if (grades.size() == 1){
